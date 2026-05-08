@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart | Vellaro Fashion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar flex container">
+        <a href="index.html" class="logo">Vellaro<span>Fashion.</span></a>
+        <ul class="navlist flex">
+            <li><a href="index.html" class="link">Home</a></li>
+            <li><a href="shop.html" class="link">Shop</a></li>
+            <li><a href="blog.html" class="link">Blog</a></li>
+            <li><a href="contact.html" class="link">Contact</a></li>
+
+            <li class="nav-icons flex">
+                <a href="#" class="icon" id="searchIcon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </a>
+                <a href="#" class="icon" id="userIcon">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+                <a href="cart.html" class="icon cart-icon">
+                    <i class="fa-solid fa-shopping-bag"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main style="margin-top:6rem;">
+<section class="section">
+<div class="container">
+
+<h2>Your Cart</h2>
+<div class="line"></div>
+
+<div id="cart-items"></div>
+
+<h3 style="margin-top:2rem;">
+    Total Bill: $<span id="total">0</span>
+</h3>
+
+</div>
+</section>
+</main>
+
+<script>
+const cart = JSON.parse(localStorage.getItem("cart")) || [];
+const cartItemsDiv = document.getElementById("cart-items");
+const totalEl = document.getElementById("total");
+
+function updateCart() {
+    cartItemsDiv.innerHTML = "";
+    let total = 0;
+
+    if (cart.length === 0) {
+        cartItemsDiv.innerHTML = "<p>Your cart is empty.</p>";
+        totalEl.innerText = "0.00";
+    } else {
+        cart.forEach((item, index) => {
+            if (!item.qty) item.qty = 1;
+
+            total += item.price * item.qty;
+
+            cartItemsDiv.innerHTML += `
+            <div class="cart-item" style="margin:10px 0;">
+                <strong>${item.title}</strong> - $${item.price}
+                <br>
+                <button onclick="minusQty(${index})">-</button>
+                <span>${item.qty}</span>
+                <button onclick="removeItem(${index})">x</button>
+            </div>`;
+        });
+    }
+
+    totalEl.innerText = total.toFixed(2);
+
+    /* 🔹 ADDED: sync cart count */
+    localStorage.setItem("cartCount", cart.length);
+    const cartDisplay = document.getElementById("cart-count");
+    if (cartDisplay) {
+        cartDisplay.innerText = cart.length;
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function minusQty(index) {
+    if (cart[index].qty > 1) {
+        cart[index].qty--;
+    } else {
+        cart.splice(index, 1);
+    }
+    updateCart();
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+updateCart();
+</script>
+
+<script src="main.js"></script>
+</body>
+</html>
